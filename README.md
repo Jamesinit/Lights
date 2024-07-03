@@ -28,9 +28,7 @@ graph TD;
 - 双舵机适配不同开关数量
 - 外壳采用滑槽设计，方便拿下来充电
 
-## 技术栈
-
-涉及以下技术：
+## 主要涉及以下技术：
 
 - **PCB设计**: ![PCB Design](https://img.shields.io/badge/PCB_Design-008000?style=flat-square&logo=protoboard&logoColor=white)
 - **Arduino**: ![Arduino](https://img.shields.io/badge/Arduino-00979D?style=flat-square&logo=arduino&logoColor=white)
