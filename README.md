@@ -35,26 +35,18 @@ graph TD;
 - **SolidWorks**: ![SolidWorks](https://img.shields.io/badge/SolidWorks-900C3F?style=flat-square&logo=solidworks&logoColor=white)
 - **Flutter**: ![Flutter](https://img.shields.io/badge/Flutter-02569B?style=flat-square&logo=flutter&logoColor=white)
 
-
 ## 项目图片展示
 
-
-## 项目图片展示
-
-<div style="display: flex; flex-wrap: wrap;">
-  <div style="flex: 1; min-width: 300px;">
-    <img src="05.Picture/Shell.jpg" width="300" height="200">
-  </div>
-  <div style="flex: 1; min-width: 300px;">
-    <img src="05.Picture/Real.jpg" width="300" height="200">
-  </div>
-  <div style="flex: 1; min-width: 300px;">
-    <img src="05.Picture/3DPCB.png" width="300" height="300">
-  </div>
-  <div style="flex: 1; min-width: 300px;">
-    <img src="05.Picture/3DDesign.png" width="300" height="300">
-  </div>
-  <div style="flex: 1; min-width: 100%;">
-    <img src="05.Picture/App.jpg" width="400" height="500">
-  </div>
-</div>
+<table>
+  <tr>
+    <td><img src="05.Picture/Shell.jpg" width="300" height="200"></td>
+    <td><img src="05.Picture/Real.jpg" width="300" height="200"></td>
+  </tr>
+  <tr>
+    <td><img src="05.Picture/3DPCB.png" width="300" height="300"></td>
+    <td><img src="05.Picture/3DDesign.png" width="300" height="300"></td>
+  </tr>
+  <tr>
+    <td colspan="2"><img src="05.Picture/App.jpg"  width="400" height="500"></td>
+  </tr>
+</table>
