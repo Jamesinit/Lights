@@ -40,8 +40,23 @@ graph TD;
 
 ## 项目图片展示
 
-<img src="05.Picture/Shell.jpg" width="300" height="200">
-<img src="05.Picture/Real.jpg" width="300" height="200">
-<img src="05.Picture/3DPCB.png" width="300" height="300">
-<img src="05.Picture/3DDesign.png" width="300" height="300">
-<img src="05.Picture/App.jpg"  width="400" height="500">
+
+## 项目图片展示
+
+<div style="display: flex; flex-wrap: wrap;">
+  <div style="flex: 1; min-width: 300px;">
+    <img src="05.Picture/Shell.jpg" width="300" height="200">
+  </div>
+  <div style="flex: 1; min-width: 300px;">
+    <img src="05.Picture/Real.jpg" width="300" height="200">
+  </div>
+  <div style="flex: 1; min-width: 300px;">
+    <img src="05.Picture/3DPCB.png" width="300" height="300">
+  </div>
+  <div style="flex: 1; min-width: 300px;">
+    <img src="05.Picture/3DDesign.png" width="300" height="300">
+  </div>
+  <div style="flex: 1; min-width: 100%;">
+    <img src="05.Picture/App.jpg" width="400" height="500">
+  </div>
+</div>
