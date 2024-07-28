@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 class SystemDeviceTile extends StatefulWidget {
@@ -8,12 +9,11 @@ class SystemDeviceTile extends StatefulWidget {
   final VoidCallback onOpen;
   final VoidCallback onConnect;
 
-  const SystemDeviceTile({
-    required this.device,
-    required this.onOpen,
-    required this.onConnect,
-    Key? key,
-  }) : super(key: key);
+  const SystemDeviceTile(
+      {required this.device,
+      required this.onConnect,
+      required this.onOpen,
+      super.key});
 
   @override
   State<SystemDeviceTile> createState() => _SystemDeviceTileState();
@@ -22,7 +22,6 @@ class SystemDeviceTile extends StatefulWidget {
 class _SystemDeviceTileState extends State<SystemDeviceTile> {
   BluetoothConnectionState _connectionState =
       BluetoothConnectionState.disconnected;
-
   late StreamSubscription<BluetoothConnectionState>
       _connectionStateSubscription;
 
@@ -55,9 +54,8 @@ class _SystemDeviceTileState extends State<SystemDeviceTile> {
       title: Text(widget.device.platformName),
       subtitle: Text(widget.device.remoteId.str),
       trailing: ElevatedButton(
-        onPressed: isConnected ? widget.onOpen : widget.onConnect,
-        child: isConnected ? const Text('OPEN') : const Text('CONNECT'),
-      ),
+          onPressed: isConnected ? widget.onOpen : widget.onConnect,
+          child: isConnected ? const Text("OPEN") : const Text('CONNECT')),
     );
   }
 }

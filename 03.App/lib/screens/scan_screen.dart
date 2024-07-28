@@ -3,14 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
-import 'device_screen.dart';
 import '../utils/snackbar.dart';
 import '../widgets/system_device_tile.dart';
 import '../widgets/scan_result_tile.dart';
 import '../utils/extra.dart';
 
 class ScanScreen extends StatefulWidget {
-  const ScanScreen({Key? key}) : super(key: key);
+  const ScanScreen({super.key});
 
   @override
   State<ScanScreen> createState() => _ScanScreenState();
@@ -33,26 +32,18 @@ class _ScanScreenState extends State<ScanScreen> {
         setState(() {});
       }
     }, onError: (e) {
-      Snackbar.show(ABC.b, prettyException("Scan Error:", e), success: false);
+      print('$e');
     });
-
     _isScanningSubscription = FlutterBluePlus.isScanning.listen((state) {
       _isScanning = state;
       if (mounted) {
         setState(() {});
       }
     });
-    onScanPressed();
+    startScan();
   }
 
-  @override
-  void dispose() {
-    _scanResultsSubscription.cancel();
-    _isScanningSubscription.cancel();
-    super.dispose();
-  }
-
-  Future onScanPressed() async {
+  Future startScan() async {
     try {
       _systemDevices = await FlutterBluePlus.systemDevices;
     } catch (e) {
@@ -70,24 +61,10 @@ class _ScanScreenState extends State<ScanScreen> {
     }
   }
 
-  Future onStopPressed() async {
-    try {
-      FlutterBluePlus.stopScan();
-    } catch (e) {
-      Snackbar.show(ABC.b, prettyException("Stop Scan Error:", e),
-          success: false);
-    }
-  }
-
-  void onConnectPressed(BluetoothDevice device) {
-    device.connectAndUpdateStream().catchError((e) {
-      Snackbar.show(ABC.c, prettyException("Connect Error:", e),
-          success: false);
-    });
-    MaterialPageRoute route = MaterialPageRoute(
-        builder: (context) => DeviceScreen(device: device),
-        settings: const RouteSettings(name: '/DeviceScreen'));
-    Navigator.of(context).push(route);
+  @override
+  void dispose() {
+    _scanResultsSubscription.cancel();
+    super.dispose();
   }
 
   Future onRefresh() {
@@ -104,17 +81,22 @@ class _ScanScreenState extends State<ScanScreen> {
     return _systemDevices
         .map(
           (d) => SystemDeviceTile(
-            device: d,
-            onOpen: () => Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (context) => DeviceScreen(device: d),
-                settings: const RouteSettings(name: '/DeviceScreen'),
-              ),
-            ),
-            onConnect: () => onConnectPressed(d),
-          ),
+              device: d,
+              onConnect: () => onConnectPressed(d),
+              onOpen: () => onConnectPressed(d)),
         )
         .toList();
+  }
+
+  void onConnectPressed(BluetoothDevice device) {
+    FlutterBluePlus.stopScan();
+    Snackbar.show(ABC.c, "Connect: Success", success: true);
+    device.connectAndUpdateStream().catchError((e) {
+      Snackbar.show(ABC.c, prettyException("Connect Error:", e),
+          success: false);
+    });
+    device.connectAndUpdateStream();
+    Navigator.of(context).pop(device);
   }
 
   List<Widget> _buildScanResultTiles(BuildContext context) {
@@ -131,22 +113,16 @@ class _ScanScreenState extends State<ScanScreen> {
   @override
   Widget build(BuildContext context) {
     return ScaffoldMessenger(
-      key: Snackbar.snackBarKeyB,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Find Devices'),
-        ),
-        body: RefreshIndicator(
+        child: Scaffold(
+      appBar: AppBar(title: const Text("Find Devices")),
+      body: RefreshIndicator(
           onRefresh: onRefresh,
           child: ListView(
             children: <Widget>[
               ..._buildSystemDeviceTiles(context),
               ..._buildScanResultTiles(context),
             ],
-          ),
-        ),
-        // floatingActionButton: buildScanButton(context),
-      ),
-    );
+          )),
+    ));
   }
 }

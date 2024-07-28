@@ -1,0 +1,195 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'screens/scan_screen.dart';
+import './utils/snackbar.dart';
+
+void main() {
+  FlutterBluePlus.setLogLevel(LogLevel.verbose, color: true);
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  // This widget is the root of your application.
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Flutter Demo',
+      theme: ThemeData(
+        colorScheme:
+            ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 96, 70, 3)),
+        useMaterial3: true,
+      ),
+      routes: {
+        "scan_screen": (context) => const ScanScreen(),
+      },
+      debugShowCheckedModeBanner: false,
+      home: const MyHomePage(title: 'Ble Lights'),
+    );
+  }
+}
+
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({super.key, required this.title});
+
+  final String title;
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  bool isAddIcon = false;
+  String AAdata = 'Default Data';
+  String localData = 'Default';
+  late BluetoothDevice myBleDevice;
+  List<BluetoothService> bleServers = [];
+  Icon getButtonStateSetIcon() {
+    return Icon(isAddIcon ? Icons.add : Icons.bluetooth_searching_outlined);
+  }
+
+  Future getBleServices(BluetoothDevice device) async {
+    return await device.discoverServices();
+  }
+
+  buttonAddOrSan() async {
+    //ExpansionTile ("scan_screen")
+    // AAdata = await Navigator.of(context).pushNamed('scan_screen').toString();
+    final result = await Navigator.pushNamed(context, 'scan_screen');
+    if (result is BluetoothDevice) {
+      setState(() async {
+        myBleDevice = result;
+        AAdata = myBleDevice.platformName;
+        print("AAAAAAAAAA\n");
+
+        print("State is : ${myBleDevice.isConnected}");
+        bleServers = await getBleServices(myBleDevice);
+        print("-------------S UUID-------------\n");
+        for (var item in bleServers) {
+          print(item.uuid);
+          for (var element in item.characteristics) {
+            print("\t${element.characteristicUuid}");
+            if (element.characteristicUuid == Guid("ffe1")) {
+              element.write(utf8.encode("Servo1-0-90;"), withoutResponse: true);
+            }
+          }
+        }
+        print("-------------END-------------\n");
+      });
+    }
+  }
+
+  void setDataPressed(String key, String value) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(key, value);
+    print("first save key to memory ,then persist the data to disk");
+  }
+
+  Future getDataPressed(String key) async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = prefs.getString(key) ?? "Error";
+    print("Get Data");
+    setState(() {
+      localData = value;
+      print(localData);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaffoldMessenger(
+      key: Snackbar.snackBarKeyA,
+      child: Scaffold(
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+            title: Text(widget.title),
+          ),
+          body: Stack(
+            children: [
+              Positioned.fill(
+                  child: Container(
+                decoration: const BoxDecoration(
+                    image: DecorationImage(
+                        image: AssetImage('assets/images/bg.png'),
+                        fit: BoxFit.cover)),
+              )),
+              Align(
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: FloatingActionButton(
+                      onPressed: buttonAddOrSan,
+                      child: getButtonStateSetIcon(),
+                    )),
+              ),
+              Center(
+                child: Column(
+                  children: [
+                    Text(AAdata),
+                    Center(
+                        child: InkWell(
+                      onTap: () {
+                        print("onTap\n");
+                        Snackbar.show(ABC.a, "A", success: true);
+                        Snackbar.show(ABC.b, "B", success: true);
+                        Snackbar.show(ABC.c, "C", success: true);
+                      },
+                      child: SizedBox(
+                        width: 300,
+                        height: 100,
+                        child: Row(children: [
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              RotatedBox(
+                                quarterTurns: 3, //90
+
+                                child: ElevatedButton(
+                                    onPressed: () => {},
+                                    child: const Text("Setting")),
+                              )
+                            ],
+                          ),
+                          Flexible(
+                            child: Card(
+                              color: Colors.white,
+                              elevation: 4,
+                              margin: EdgeInsets.zero,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
+                              shadowColor: Color.fromARGB(156, 11, 13, 12),
+                              clipBehavior: Clip.hardEdge,
+                              borderOnForeground: true,
+                              child: const Center(
+                                child: Text(
+                                  "TEST Card",
+                                  style: TextStyle(
+                                    fontSize: 20,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ]),
+                      ),
+                    )),
+                    ElevatedButton(
+                        onPressed: () => setDataPressed("Name", "Jake"),
+                        child: const Text("SetData")),
+                    ElevatedButton(
+                        onPressed: () => getDataPressed("Name"),
+                        child: const Text("GetData")),
+                    Card(color: Colors.green, child: Text(localData)),
+                  ],
+                ),
+              ),
+            ],
+          )),
+    );
+  }
+}

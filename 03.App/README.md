@@ -1,4 +1,4 @@
-# lights
+# ble_lights
 
 A new Flutter project.
 
